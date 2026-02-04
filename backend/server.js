@@ -15,4 +15,5 @@ app.use("/api/v1", productRoutes);
 app.use("/api/v1", searchRoutes);
 seedProducts();
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+
+
