@@ -1,18 +1,32 @@
-function rank(products, intent) {
-  return products.map(p => {
-    let score = 0;
+const { products } = require("./data.store");
 
-    if (p.title.toLowerCase().includes("iphone")) score += 20;
-    score += p.rating * 5;
-    score += Math.log(p.sales + 1);
-    if (p.stock > 0) score += 10;
-
-    if (intent.cheap) score += (100000 - p.price) / 1000;
-    if (intent.latest && p.metadata?.model?.includes("16")) score += 15;
-    if (intent.color && p.description.includes(intent.color[0])) score += 10;
-
-    return { ...p, score };
-  }).sort((a, b) => b.score - a.score);
+function parseQuery(q) {
+  q = q.toLowerCase();
+  return {
+    cheap: q.includes("sasta") || q.includes("cheap"),
+    color: ["red","blue","black"].find(c => q.includes(c)),
+    storage: q.match(/\d+gb/)?.[0]?.toUpperCase(),
+    keyword: q.split(" ")[0]
+  };
 }
 
-module.exports = rank;
+function score(p, intent) {
+  let s = 0;
+  if (p.title.toLowerCase().includes(intent.keyword)) s += 40;
+  if (intent.color && p.metadata.color.toLowerCase() === intent.color) s += 20;
+  if (intent.storage && p.metadata.storage === intent.storage) s += 20;
+  if (intent.cheap && p.price < 30000) s += 30;
+  s += p.rating * 10;
+  s += Math.log(p.unitsSold + 1);
+  if (p.stock > 0) s += 15; else s -= 100;
+  return s;
+}
+
+function searchProducts(query) {
+  const intent = parseQuery(query);
+  return products
+    .map(p => ({ ...p, score: score(p, intent) }))
+    .sort((a,b)=>b.score-a.score);
+}
+
+module.exports = { searchProducts };

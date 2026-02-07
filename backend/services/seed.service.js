@@ -1,36 +1,26 @@
-const store = require("./store.service");
-const Product = require("../models/product.model");
+const { products } = require("./data.store");
 
-function seedProducts() {
-  const colors = ["red", "blue", "black", "white"];
-  const storage = ["64GB", "128GB", "256GB"];
-  const models = ["iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16"];
+module.exports = function seedProducts() {
+  if (products.length) return;
 
-  for (let i = 0; i < 1000; i++) {
-    const model = models[Math.floor(Math.random() * models.length)];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const storeSize = storage[Math.floor(Math.random() * storage.length)];
+  const brands = ["Apple","Samsung","OnePlus"];
+  const colors = ["Red","Blue","Black"];
+  const storage = ["64GB","128GB","256GB"];
 
-    const product = new Product({
-      title: model,
-      description: `${model} ${storeSize} ${color} colour`,
-      rating: (Math.random() * 2 + 3).toFixed(1),
-      stock: Math.floor(Math.random() * 200),
-      price: Math.floor(Math.random() * 50000 + 30000),
-      mrp: Math.floor(Math.random() * 60000 + 40000),
-      currency: "INR"
+  for (let i = 1; i <= 1000; i++) {
+    products.push({
+      id: i,
+      title: `${brands[i%3]} Phone ${i}`,
+      description: "High performance smartphone",
+      brand: brands[i%3],
+      price: 10000 + Math.random()*70000,
+      rating: 3 + Math.random()*2,
+      unitsSold: Math.floor(Math.random()*10000),
+      stock: Math.floor(Math.random()*50),
+      metadata: {
+        color: colors[i%3],
+        storage: storage[i%3]
+      }
     });
-
-    product.metadata = {
-      storage: storeSize,
-      color: color,
-      model: model
-    };
-
-    store.add(product);
   }
-
-  console.log("✅ 1000 products seeded");
-}
-
-module.exports = seedProducts;
+};
