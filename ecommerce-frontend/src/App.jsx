@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+const API_BASE = "https://glp-assignment-1.onrender.com";
+
 function App() {
   const [query, setQuery] = useState("");
   const [products, setProducts] = useState([]);
@@ -10,18 +12,23 @@ function App() {
 
   const searchProducts = async () => {
     try {
-      const res = await axios.get(`/api/v1/search/product?query=${query}`);
+      const res = await axios.get(
+        `${API_BASE}/api/v1/search/product?query=${query}`
+      );
+
       let data = res.data.data;
 
+      // Filter
       if (maxPrice) data = data.filter(p => p.price <= Number(maxPrice));
 
+      // Sorting
       if (sort === "price") data.sort((a, b) => a.price - b.price);
       if (sort === "rating") data.sort((a, b) => b.rating - a.rating);
 
       setProducts(data);
     } catch (err) {
       console.error(err);
-      alert("Backend not running!");
+      alert("Backend server error or waking up...");
     }
   };
 
