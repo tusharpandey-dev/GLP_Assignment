@@ -10,12 +10,10 @@ function App() {
 
   const searchProducts = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/v1/search/product?query=${query}`
-      );
+      const res = await axios.get(`/api/v1/search/product?query=${query}`);
       let data = res.data.data;
 
-      if (maxPrice) data = data.filter(p => p.price <= maxPrice);
+      if (maxPrice) data = data.filter(p => p.price <= Number(maxPrice));
 
       if (sort === "price") data.sort((a, b) => a.price - b.price);
       if (sort === "rating") data.sort((a, b) => b.rating - a.rating);
@@ -33,8 +31,7 @@ function App() {
 
       <div className="search-bar">
         <input
-          type="text"
-          placeholder="Search iPhone, cheap phone, red color..."
+          placeholder="Search iPhone, cheap phone, red..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -57,7 +54,7 @@ function App() {
 
       <div className="grid">
         {products.map((p) => (
-          <div key={p.productId} className="card">
+          <div key={p.id} className="card">
             <h3>{p.title}</h3>
             <p>{p.description}</p>
             <p className="price">₹{p.price}</p>
